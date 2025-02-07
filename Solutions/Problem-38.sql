@@ -1,0 +1,33 @@
+/* 38.Customers Who Bought All Products :
+
+    Table: Customer
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| customer_id | int     |
+| product_key | int     |
++-------------+---------+
+This table may contain duplicates rows. 
+customer_id is not NULL.
+product_key is a foreign key (reference column) to Product table.
+ 
+Table: Product
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| product_key | int     |
++-------------+---------+
+product_key is the primary key (column with unique values) for this table.
+
+Write a solution to report the customer ids from the Customer table that bought all the products in the Product table.
+*/
+
+
+
+WITH ProductCount AS (
+    SELECT COUNT(*) AS total_products FROM Product
+)
+SELECT c.customer_id
+FROM Customer c
+GROUP BY c.customer_id
+HAVING COUNT(DISTINCT c.product_key) = (SELECT total_products FROM ProductCount);
