@@ -19,3 +19,22 @@ You are the restaurant owner and you want to analyze a possible expansion (there
 Compute the moving average of how much the customer paid in a seven days window (i.e., current day + 6 days before). average_amount should be rounded to two decimal places.
 */
 
+WITH Aggregated AS (
+    SELECT visited_on, SUM(amount) AS total_amount
+    FROM Customer
+    GROUP BY visited_on
+),
+MovingAverage AS (
+    SELECT 
+        a1.visited_on,
+        SUM(a2.total_amount) AS amount,
+        ROUND(AVG(a2.total_amount), 2) AS average_amount
+    FROM Aggregated a1
+    JOIN Aggregated a2
+    ON a2.visited_on BETWEEN DATE_SUB(a1.visited_on, INTERVAL 6 DAY) AND a1.visited_on
+    GROUP BY a1.visited_on
+    HAVING COUNT(a2.visited_on) = 7
+)
+SELECT visited_on, amount, average_amount
+FROM MovingAverage
+ORDER BY visited_on;
